@@ -1,34 +1,32 @@
 package TG
 
-import (
-	"github.com/gdamore/tcell/v2"
-)
+import "sync"
 
-type Api struct {
-	screen tcell.Screen
+type ApiBridge struct {
+	commands map[string]interface{}
+	mu       sync.RWMutex
 }
 
-func (api *Api) Init(screen tcell.Screen) {
-	api.screen = screen
+func NewApiBridge() *ApiBridge {
+	return &ApiBridge{}
 }
 
-func (api *Api) RunCommand(cmd string) {
+func (api *ApiBridge) RegisterCommand(name string, fn interface{}) {
+	api.mu.Lock()
+	defer api.mu.Unlock()
+	api.commands[name] = fn
 }
 
-func (api *Api) GetScreenSize() (int, int) {
-	return api.screen.Size()
-}
-
-func (api *Api) WriteText(msg string, x int, y int, style tcell.Style) {
-
-	for i, ch := range msg {
-		api.screen.SetContent(x+i, y, ch, nil, style)
+func (api *ApiBridge) Call(name string, args ...interface{}) interface{} {
+	api.mu.RLock()
+	defer api.mu.RUnlock()
+	if fn, exists := api.commands[name]; exists {
+		if f, ok := fn.(func() string); ok {
+			return f()
+		} else if f, ok := fn.(func()); ok {
+			f()
+			return nil
+		}
 	}
-	api.screen.Show()
-
-}
-
-func (api *Api) ClearScreen() {
-	api.screen.Clear()
-	api.screen.Show()
+	return nil
 }

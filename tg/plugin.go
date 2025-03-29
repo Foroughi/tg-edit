@@ -1,6 +1,8 @@
 package TG
 
 type Plugin interface {
-	Init(api *Api)
+	Init(tg *TG)
+	OnInstall()
+	OnUninstall()
 	Name() string
 }
