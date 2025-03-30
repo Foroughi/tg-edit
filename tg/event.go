@@ -42,3 +42,16 @@ func (em *EventManager) Dispatch(event string, data interface{}) {
 		subscription(data)
 	}
 }
+
+func (em *EventManager) Subscribe(event string, handler Event) int {
+	em.lock.Lock()
+	defer em.lock.Unlock()
+
+	if _, exists := em.subscriptions[event]; !exists {
+		em.subscriptions[event] = make(map[int]Event)
+	}
+
+	em.counter++
+	em.subscriptions[event][em.counter] = handler
+	return em.counter
+}

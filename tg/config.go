@@ -14,11 +14,6 @@ type ConfigManager struct {
 	changed bool // Track whether any changes have been made
 }
 
-// Default configurations
-var defaultConfig = map[string]string{
-	"pluginmanager": "default",
-}
-
 func NewConfigManager() *ConfigManager {
 	return &ConfigManager{
 		configs: make(map[string]string),

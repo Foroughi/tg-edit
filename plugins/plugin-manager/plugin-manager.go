@@ -1,7 +1,6 @@
-package TG
+package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -15,10 +14,15 @@ type PluginManagerPlugin struct {
 	tg      *TG.TG
 }
 
-func NewPluginManager() *PluginManagerPlugin {
+func New() TG.Plugin {
 	return &PluginManagerPlugin{
 		plugins: make(map[string]TG.Plugin),
 	}
+}
+
+func (pm *PluginManagerPlugin) shouldLoadPlugin(fileName string) bool {
+	// Prevent loading itself
+	return fileName != "plugin-manager.so"
 }
 
 func (pm *PluginManagerPlugin) LoadPlugins() {
@@ -28,47 +32,67 @@ func (pm *PluginManagerPlugin) LoadPlugins() {
 		log.Fatalf("Error reading plugin directory: %v", err)
 	}
 
-	// Iterate over the files in the plugin directory
+	// Step 1: Collect all plugins
+	pendingPlugins := make(map[string]TG.Plugin)
 	for _, file := range files {
-		// Only process .so files (plugin files)
-		if filepath.Ext(file.Name()) == ".so" {
+		if filepath.Ext(file.Name()) == ".so" && pm.shouldLoadPlugin(file.Name()) {
 			pluginPath := filepath.Join(pluginDir, file.Name())
 
-			// Open the plugin
 			plug, err := plugin.Open(pluginPath)
 			if err != nil {
 				log.Printf("Error loading plugin %s: %v", file.Name(), err)
 				continue
 			}
 
-			// Look for the "New" function in the plugin
 			sym, err := plug.Lookup("New")
 			if err != nil {
 				log.Printf("Plugin %s does not have a New function: %v", file.Name(), err)
 				continue
 			}
 
-			// Cast the symbol to a function returning a Plugin
 			newPlugin, ok := sym.(func() TG.Plugin)
 			if !ok {
 				log.Printf("Plugin %s has an invalid New function signature", file.Name())
 				continue
 			}
 
-			// Initialize the plugin
 			pluginInstance := newPlugin()
+			pendingPlugins[pluginInstance.Name()] = pluginInstance
+		}
+	}
 
-			// Call the Init function of the plugin
-			if apiInstance, ok := pluginInstance.(TG.Plugin); ok {
-				// Assuming you have a TG.Api instance
-				apiInstance.Init(&Api{})
-			} else {
-				log.Printf("Plugin %s does not have an Init method", file.Name())
+	// Step 2: Load plugins in correct order
+	loadedPlugins := make(map[string]TG.Plugin)
+
+	for len(pendingPlugins) > 0 {
+		progress := false
+
+		for name, plugin := range pendingPlugins {
+			missingDeps := []string{}
+			for _, dep := range plugin.DependsOn() {
+				if _, exists := pendingPlugins[dep]; !exists && loadedPlugins[dep] == nil {
+					missingDeps = append(missingDeps, dep)
+				}
 			}
 
-			// Add the plugin to the manager
-			pm.AddPlugin(pluginInstance)
-			log.Printf("Loaded plugin: %s", file.Name())
+			if len(missingDeps) > 0 {
+				log.Printf("Skipping plugin %s: missing dependencies: %v", name, missingDeps)
+				delete(pendingPlugins, name) // Remove it since dependencies are missing
+				continue
+			}
+
+			// Load the plugin since all dependencies exist
+			plugin.Init(pm.tg)
+			loadedPlugins[name] = plugin
+			pm.AddPlugin(plugin)
+			delete(pendingPlugins, name)
+			log.Printf("Loaded plugin: %s", name)
+			progress = true
+		}
+
+		// Step 3: If no progress, circular dependency detected
+		if !progress {
+			log.Fatalf("Circular dependency detected! Unresolved plugins: %v", pendingPlugins)
 		}
 	}
 }
@@ -87,33 +111,25 @@ func (pm *PluginManagerPlugin) GetPlugin(name string) (TG.Plugin, bool) {
 	return plugin, exists
 }
 
-func (pm *PluginManagerPlugin) RegisterToApi(tg *TG.TG) {
-	// This will register the PluginManager into the API
-	tg.Api.RegisterCommand("AddPlugin", func(data interface{}) {
-		if plugin, ok := data.(TG.Plugin); ok {
-			pm.AddPlugin(plugin) // Adjust this based on how plugins are added
-		}
+func (pm *PluginManagerPlugin) Init(tg *TG.TG) {
+
+	pm.tg = tg
+
+	pm.tg.Event.Subscribe("ON_APP_START", func(data interface{}) {
+		pm.LoadPlugins()
+
 	})
 
-	tg.Api.RegisterCommand("GetPlugin", func(data interface{}) {
-		if pluginName, ok := data.(string); ok {
-			plugin, exists := pm.GetPlugin(pluginName)
-			if !exists {
-				fmt.Println("Plugin not found.")
-			} else {
-				fmt.Println("Plugin found:", plugin.Name())
-			}
-		}
-	})
 }
 
-func (pm *PluginManagerPlugin) Initialize(tg *TG.TG) {
-	// Register the PluginManager with the API
-	pm.RegisterToApi(tg)
-
-	// Perform any additional initialization steps if needed
+func (p *PluginManagerPlugin) Name() string {
+	return "PluginManager"
 }
 
 func (p *PluginManagerPlugin) OnInstall() {}
 
 func (p *PluginManagerPlugin) OnUninstall() {}
+
+func (p *PluginManagerPlugin) DependsOn() []string {
+	return []string{}
+}

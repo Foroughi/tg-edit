@@ -1,4 +1,4 @@
-package TG
+package main
 
 import (
 	"log"
@@ -22,17 +22,23 @@ type Message struct {
 
 type MessageCenterPlugin struct {
 	messages []Message
-	tg  *TG.TG
+	tg       *TG.TG
 }
 
 func (p *MessageCenterPlugin) Init(tg *TG.TG) {
 
-	p.tg = tg;
+	p.tg = tg
 
 	p.tg.Api.RegisterCommand("AddMessage", p.AddMessage)
 	p.tg.Api.RegisterCommand("GetMessages", p.GetMessages)
 
 	log.Println("MessageCenter Plugin Initialized")
+}
+
+func New() TG.Plugin {
+	return &MessageCenterPlugin{
+		messages: []Message{},
+	}
 }
 
 func (p *MessageCenterPlugin) AddMessage(args ...interface{}) interface{} {
@@ -50,9 +56,13 @@ func (p *MessageCenterPlugin) GetMessages(args ...interface{}) interface{} {
 }
 
 func (p *MessageCenterPlugin) Name() string {
-	return "MessageCenterPlugin"
+	return "MessageCenter"
 }
 
 func (p *MessageCenterPlugin) OnInstall() {}
 
 func (p *MessageCenterPlugin) OnUninstall() {}
+
+func (p *MessageCenterPlugin) DependsOn() []string {
+	return []string{}
+}

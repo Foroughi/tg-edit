@@ -1,6 +1,9 @@
 package TG
 
-import "sync"
+import (
+	"reflect"
+	"sync"
+)
 
 type ApiBridge struct {
 	commands map[string]interface{}
@@ -8,7 +11,10 @@ type ApiBridge struct {
 }
 
 func NewApiBridge() *ApiBridge {
-	return &ApiBridge{}
+	return &ApiBridge{
+		commands: make(map[string]interface{}),
+		mu:       sync.RWMutex{},
+	}
 }
 
 func (api *ApiBridge) RegisterCommand(name string, fn interface{}) {
@@ -19,14 +25,23 @@ func (api *ApiBridge) RegisterCommand(name string, fn interface{}) {
 
 func (api *ApiBridge) Call(name string, args ...interface{}) interface{} {
 	api.mu.RLock()
-	defer api.mu.RUnlock()
-	if fn, exists := api.commands[name]; exists {
-		if f, ok := fn.(func() string); ok {
-			return f()
-		} else if f, ok := fn.(func()); ok {
-			f()
-			return nil
-		}
+	fn, exists := api.commands[name]
+	api.mu.RUnlock()
+	if !exists {
+		return nil
 	}
+
+	fnValue := reflect.ValueOf(fn)
+	in := make([]reflect.Value, len(args))
+	for i, arg := range args {
+		in[i] = reflect.ValueOf(arg)
+	}
+
+	out := fnValue.Call(in)
+
+	if len(out) > 0 {
+		return out[0].Interface()
+	}
+
 	return nil
 }

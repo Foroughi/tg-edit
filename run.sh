@@ -9,13 +9,13 @@ echo "🔹 Cleaning old builds..."
 rm -f $APP_NAME $PLUGINS_DIR/*.so
 
 echo "🔹 Building main app..."
-go build -o $APP_NAME
+/usr/local/go/bin/go build -o $APP_NAME
 
 echo "🔹 Building plugins..."
 for dir in $PLUGINS_DIR/*/; do
     PLUGIN_NAME=$(basename "$dir")
     echo "🔹 Building plugin: $PLUGIN_NAME"
-    go build -buildmode=plugin -o "$PLUGINS_DIR/$PLUGIN_NAME.so" "$dir/$PLUGIN_NAME.go"
+    /usr/local/go/bin/go build -buildmode=plugin -o "$PLUGINS_DIR/$PLUGIN_NAME.so" "$dir/$PLUGIN_NAME.go"
 done
 
 # Add execute permissions on all .so files (plugin files)
