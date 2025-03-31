@@ -4,18 +4,23 @@ import (
 	"sync"
 )
 
-type Event func(data interface{})
+type Event func(tg *TG, data any)
 
 type EventManager struct {
 	subscriptions map[string]map[int]Event
 	lock          sync.RWMutex
 	counter       int
+	tg            *TG
 }
 
 func NewEventManager() *EventManager {
 	return &EventManager{
 		subscriptions: make(map[string]map[int]Event),
 	}
+}
+
+func (em *EventManager) Load(tg *TG) {
+	em.tg = tg
 }
 
 func (em *EventManager) Register(event string, handler Event) {
@@ -27,10 +32,12 @@ func (em *EventManager) Register(event string, handler Event) {
 	}
 
 	em.counter++
+
 	em.subscriptions[event][em.counter] = handler
 }
 
-func (em *EventManager) Dispatch(event string, data interface{}) {
+func (em *EventManager) Dispatch(event string, args any) {
+
 	em.lock.RLock()
 	subscriptions, exists := em.subscriptions[event]
 	em.lock.RUnlock()
@@ -39,7 +46,7 @@ func (em *EventManager) Dispatch(event string, data interface{}) {
 	}
 
 	for _, subscription := range subscriptions {
-		subscription(data)
+		subscription(em.tg, args)
 	}
 }
 

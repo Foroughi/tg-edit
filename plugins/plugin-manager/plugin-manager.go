@@ -115,7 +115,7 @@ func (pm *PluginManagerPlugin) Init(tg *TG.TG) {
 
 	pm.tg = tg
 
-	pm.tg.Event.Subscribe("ON_APP_START", func(data interface{}) {
+	pm.tg.Event.Subscribe("ON_APP_START", func(tg *TG.TG, data any) {
 		pm.LoadPlugins()
 
 	})

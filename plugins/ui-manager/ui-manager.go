@@ -8,8 +8,9 @@ import (
 )
 
 type UIManagerPlugin struct {
-	screen tcell.Screen
-	tg     *TG.TG
+	screen      tcell.Screen
+	tg          *TG.TG
+	exitChannel chan struct{}
 }
 
 func (ui *UIManagerPlugin) Init(tg *TG.TG) {
@@ -19,18 +20,25 @@ func (ui *UIManagerPlugin) Init(tg *TG.TG) {
 		log.Fatalf("Failed to create screen: %v", err)
 	}
 	ui.screen = screen
-	tg.Api.RegisterCommand("Start_UI", func() {
+
+	tg.Event.Subscribe("ON_Quit", func(tg *TG.TG, args any) {
+		log.Print("calling ***************")
+		ui.exitChannel <- struct{}{}
+	})
+
+	tg.Api.RegisterCommand("Start_UI", func(tg *TG.TG, data any) {
 		defer ui.screen.Fini()
 		if err := ui.screen.Init(); err != nil {
 			log.Fatalf("Failed to initialize screen: %v", err)
 		}
 		ui.eventLoop()
 	})
+
 }
 
 func (ui *UIManagerPlugin) eventLoop() {
 	ui.screen.Clear()
-	exitChannel := make(chan struct{})
+	ui.exitChannel = make(chan struct{})
 	go func() {
 		for {
 			ev := ui.screen.PollEvent()
@@ -39,16 +47,16 @@ func (ui *UIManagerPlugin) eventLoop() {
 
 				if ev.Key() == tcell.KeyEscape {
 
-					exitChannel <- struct{}{}
+					ui.exitChannel <- struct{}{}
 					return
 				}
 
-				ui.tg.Event.Dispatch("ON_KEY", ev.Key())
+				ui.tg.Event.Dispatch("ON_KEY", ev)
 			}
 			ui.screen.Show()
 		}
 	}()
-	<-exitChannel
+	<-ui.exitChannel
 }
 
 func (p *UIManagerPlugin) Name() string {
@@ -67,7 +75,7 @@ func (p *UIManagerPlugin) DependsOn() []string {
 	return []string{"MessageCenter"}
 }
 
-func (ui *UIManagerPlugin) DrawText(args ...interface{}) interface{} {
+func (ui *UIManagerPlugin) DrawText(args ...any) any {
 
 	if len(args) < 3 {
 

@@ -1,70 +1,83 @@
 package TG
 
 import (
-	"log"
+	"strings"
+
+	"github.com/gdamore/tcell/v2"
 )
 
 type KeyManager struct {
-	currentSequence  []string          // Tracks the current sequence of keys pressed
-	registeredEvents map[string]func() // Registered commands to be executed on key press
+	currentSequence []string // Tracks the current sequence of keys pressed
+	tg              *TG
 }
 
 // Initialize the key manager and set default key combinations
 func NewKeyManager() *KeyManager {
 
 	return &KeyManager{
-		currentSequence:  []string{},
-		registeredEvents: make(map[string]func()),
+		currentSequence: []string{},
 	}
 }
 
 func (km *KeyManager) Load(tg *TG) {
-	tg.Event.Subscribe("ON_KEY", km.handleKeyEvent)
+	km.tg = tg
+	km.tg.Event.Subscribe("ON_KEY", func(tg *TG, data any) {
+
+		km.handleKeyEvent(data)
+	})
 }
 
 // Handle a key event: check if it matches a key sequence
-func (km *KeyManager) handleKeyEvent(data interface{}) {
-	key, ok := data.(string)
+func (km *KeyManager) handleKeyEvent(data any) {
+
+	keyEvent, ok := data.(*tcell.EventKey)
+
 	if !ok {
-		log.Println("Invalid key data")
+
 		return
 	}
+
+	key := km.getKeyString(keyEvent)
 
 	// Add the key to the current sequence
 	km.currentSequence = append(km.currentSequence, key)
 
 	// Check if the current sequence matches any of the default key combinations
-	if command, exists := km.matchSequence(km.currentSequence); exists {
+	if command, exists := km.matchSequence(); exists {
 		// Sequence matched, call the associated command
-		if handler, cmdExists := km.registeredEvents[command]; cmdExists {
-			handler() // Execute the command
-		} else {
-			log.Printf("No handler registered for command: %s", command)
-		}
+
+		km.tg.Api.Call(command)
+
 		// Clear the sequence after execution
 		km.currentSequence = []string{}
-	} else {
-		// If no match, continue collecting keys for the sequence
-		log.Printf("Current sequence: %v", km.currentSequence)
 	}
 }
 
-// Match the current sequence with the default keys
-func (km *KeyManager) matchSequence(seq []string) (string, bool) {
-	// Join the sequence to form a key string (e.g., "gx" from ["g", "x"])
-	seqStr := ""
-	for _, key := range seq {
-		seqStr += key
+func (km *KeyManager) getKeyString(ev *tcell.EventKey) string {
+	if ev.Modifiers()&tcell.ModCtrl != 0 {
+		return "Ctrl+" + ev.Name()
 	}
+	if ev.Modifiers()&tcell.ModAlt != 0 {
+		return "Alt+" + ev.Name()
+	}
+	return ev.Name() // Default key name
+}
 
-	// Check if the sequence matches any key in the defaultKeys map
-	if command, exists := defaultKeys[seqStr]; exists {
+func (km *KeyManager) matchSequence() (string, bool) {
+	// Convert currentSequence (e.g., ["Rune[g]", "Rune[x]"]) to a simple string (e.g., "gx")
+	var cleanedSeq []string
+	for _, key := range km.currentSequence {
+		cleanedSeq = append(cleanedSeq, strings.TrimPrefix(strings.TrimSuffix(key, "]"), "Rune["))
+	}
+	seqStr := strings.Join(cleanedSeq, "")
+
+	// Check for a direct match
+	if command, exists := defaultKeys[seqStr]; exists && command != "" {
 		return command, true
 	}
 
-	// Check if the sequence is part of a key combination (e.g., "g" as a group)
-	if partialCommand, exists := defaultKeys[seq[0]]; exists && partialCommand == "" {
-		// The sequence is part of a multi-step command
+	// If it's a group key (e.g., "g" with ""), continue waiting
+	if _, exists := defaultKeys[seqStr]; exists {
 		return "", false
 	}
 

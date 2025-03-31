@@ -2,12 +2,22 @@ package main
 
 import (
 	"log"
+	"os"
 	"plugin"
 
 	TG "github.com/foroughi/tg-edit/tg"
 )
 
 func main() {
+
+	// Open or create a log file
+	file, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	log.SetOutput(file)
 
 	tg := TG.NewTG()
 

@@ -1,6 +1,6 @@
 package TG
 
-import "os"
+import "log"
 
 type TG struct {
 	Api    *ApiBridge
@@ -23,12 +23,14 @@ func NewTG() *TG {
 		Key:    keyManager,
 	}
 
+	for name, action := range defaultCommands {
+		tg.Api.RegisterCommand(name, action)
+	}
+
 	configManager.Load()
 	keyManager.Load(tg)
-
-	for name, action := range defaultCommands {
-		eventManager.Register(name, action)
-	}
+	apiBridge.Load(tg)
+	eventManager.Load(tg)
 
 	return tg
 }
@@ -45,7 +47,8 @@ var defaultKeys = map[string]string{
 }
 
 var defaultCommands = map[string]Event{
-	"quit": func(data interface{}) {
-		os.Exit(0)
+	"quit": func(tg *TG, data any) {
+		log.Print("efwefwefewfwef")
+		tg.Event.Dispatch("ON_Quit", data)
 	},
 }

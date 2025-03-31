@@ -41,7 +41,7 @@ func New() TG.Plugin {
 	}
 }
 
-func (p *MessageCenterPlugin) AddMessage(args ...interface{}) interface{} {
+func (p *MessageCenterPlugin) AddMessage(args ...any) any {
 	level, content := args[0].(MessageLevel), args[1].(string)
 	msg := Message{Level: level, Content: content}
 	p.messages = append(p.messages, msg)
@@ -51,7 +51,7 @@ func (p *MessageCenterPlugin) AddMessage(args ...interface{}) interface{} {
 	return msg
 }
 
-func (p *MessageCenterPlugin) GetMessages(args ...interface{}) interface{} {
+func (p *MessageCenterPlugin) GetMessages(args ...any) any {
 	return p.messages
 }
 
