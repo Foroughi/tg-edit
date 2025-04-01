@@ -32,44 +32,67 @@ func (api *ApiBridge) RegisterCommand(name string, fn any) {
 }
 
 func (api *ApiBridge) Call(name string, args ...any) any {
-
-	args = append([]any{api.tg}, args...)
+	args = append([]any{api.tg}, args...) // Ensure the first argument is TG instance
 
 	api.mu.RLock()
 	fn, exists := api.commands[name]
 	api.mu.RUnlock()
 	if !exists {
-		log.Printf("Command not found: %s", name)
+		log.Printf("[ERROR] Command not found: %s", name)
 		return nil
 	}
 
 	fnValue := reflect.ValueOf(fn)
 	fnType := fnValue.Type()
-
-	// Ensure at least the required number of arguments are passed
 	expectedArgs := fnType.NumIn()
-	if len(args) < expectedArgs {
-		// Fill missing arguments with `nil`
-		for len(args) < expectedArgs {
-			args = append(args, nil)
+
+	log.Printf("Calling function: %s", name)
+	// Ensure provided arguments match the function's expected parameters
+	for len(args) < expectedArgs {
+		argType := fnType.In(len(args))
+		var zeroValue reflect.Value
+
+		if argType.Kind() == reflect.Ptr {
+			zeroValue = reflect.New(argType.Elem()) // Create a pointer to zero value
+
+		} else {
+			zeroValue = reflect.Zero(argType) // Standard zero value for the type
+
+		}
+
+		args = append(args, zeroValue.Interface())
+	}
+
+	// Convert args to reflect.Value slice
+	in := make([]reflect.Value, len(args))
+	for i, arg := range args {
+		if arg == nil {
+			argType := fnType.In(i)
+			if argType.Kind() == reflect.Ptr {
+				in[i] = reflect.New(argType.Elem()) // Create a valid nil pointer
+
+			} else {
+				in[i] = reflect.Zero(argType) // Create a zero value
+
+			}
+		} else {
+			in[i] = reflect.ValueOf(arg)
+
 		}
 	}
 
-	in := make([]reflect.Value, len(args))
-
-	log.Printf("Calling function: %s with args: %v", name, args)
-
-	// Recover from panics
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("Recovered from panic in %s: %v", name, r)
+			log.Printf("[ERROR] Panic in %s: %v", name, r)
 		}
 	}()
 
+	// Call function
 	out := fnValue.Call(in)
-	log.Print("Function call completed")
+	log.Printf("Function %s executed successfully", name)
 
 	if len(out) > 0 {
+
 		return out[0].Interface()
 	}
 

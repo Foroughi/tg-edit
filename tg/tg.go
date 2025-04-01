@@ -1,7 +1,5 @@
 package TG
 
-import "log"
-
 type TG struct {
 	Api    *ApiBridge
 	Event  *EventManager
@@ -48,7 +46,6 @@ var defaultKeys = map[string]string{
 
 var defaultCommands = map[string]Event{
 	"quit": func(tg *TG, data any) {
-		log.Print("efwefwefewfwef")
 		tg.Event.Dispatch("ON_Quit", data)
 	},
 }

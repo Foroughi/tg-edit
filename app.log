@@ -1,15 +1,17 @@
-2025/03/31 20:51:19 registering quit
-2025/03/31 20:51:19 Loading plugin manager: plugin-manager...
-2025/03/31 20:51:19 Custom plugin plugin-manager loaded successfully.
-2025/03/31 20:51:19 Starting TG-Edit...
-2025/03/31 20:51:19 registering AddMessage
-2025/03/31 20:51:19 registering GetMessages
-2025/03/31 20:51:19 MessageCenter Plugin Initialized
-2025/03/31 20:51:19 Plugin 'MessageCenter' added successfully.
-2025/03/31 20:51:19 Loaded plugin: MessageCenter
-2025/03/31 20:51:19 registering Start_UI
-2025/03/31 20:51:19 Plugin 'UIManager' added successfully.
-2025/03/31 20:51:19 Loaded plugin: UIManager
-2025/03/31 20:51:19 Calling function: Start_UI with args: [0xc00011e720 <nil>]
-2025/03/31 20:51:19 Recovered from panic in Start_UI: reflect: Call using zero Value argument
-2025/03/31 20:51:19 Stopping TG-Edit...
+2025/04/01 16:37:51 registering quit
+2025/04/01 16:37:51 Loading plugin manager: plugin-manager...
+2025/04/01 16:37:51 Custom plugin plugin-manager loaded successfully.
+2025/04/01 16:37:51 Starting TG-Edit...
+2025/04/01 16:37:51 registering AddMessage
+2025/04/01 16:37:51 registering GetMessages
+2025/04/01 16:37:51 MessageCenter Plugin Initialized
+2025/04/01 16:37:51 Plugin 'MessageCenter' added successfully.
+2025/04/01 16:37:51 Loaded plugin: MessageCenter
+2025/04/01 16:37:51 registering Start_UI
+2025/04/01 16:37:51 Plugin 'UIManager' added successfully.
+2025/04/01 16:37:51 Loaded plugin: UIManager
+2025/04/01 16:37:51 Calling function: Start_UI
+2025/04/01 16:37:53 Calling function: quit
+2025/04/01 16:37:53 Function quit executed successfully
+2025/04/01 16:37:53 Function Start_UI executed successfully
+2025/04/01 16:37:53 Stopping TG-Edit...
