@@ -1,6 +1,7 @@
 package TG
 
 import (
+	"log"
 	"sync"
 )
 
@@ -51,10 +52,14 @@ func (em *EventManager) Dispatch(event string, args any) {
 }
 
 func (em *EventManager) Subscribe(event string, handler Event) int {
+
+	log.Printf("%s %d", event, len(em.subscriptions[event]))
+
 	em.lock.Lock()
 	defer em.lock.Unlock()
 
 	if _, exists := em.subscriptions[event]; !exists {
+
 		em.subscriptions[event] = make(map[int]Event)
 	}
 

@@ -6,16 +6,8 @@ import (
 	TG "github.com/foroughi/tg-edit/tg"
 )
 
-type MessageLevel string
-
-const (
-	Info    MessageLevel = "INFO"
-	Warning MessageLevel = "WARNING"
-	Error   MessageLevel = "ERROR"
-)
-
 type Message struct {
-	Level        MessageLevel
+	Level        string
 	Content      string
 	Initiallator string
 }
@@ -41,17 +33,18 @@ func New() TG.Plugin {
 	}
 }
 
-func (p *MessageCenterPlugin) AddMessage(args ...any) any {
-	level, content := args[0].(MessageLevel), args[1].(string)
+func (p *MessageCenterPlugin) AddMessage(tg *TG.TG, args ...any) any {
+	level, content := args[0].(string), args[1].(string)
 	msg := Message{Level: level, Content: content}
 	p.messages = append(p.messages, msg)
 
 	p.tg.Event.Dispatch("message_added", msg)
+	log.Printf("[%s] %s", level, content)
 
 	return msg
 }
 
-func (p *MessageCenterPlugin) GetMessages(args ...any) any {
+func (p *MessageCenterPlugin) GetMessages(tg *TG.TG, args ...any) any {
 	return p.messages
 }
 

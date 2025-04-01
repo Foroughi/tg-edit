@@ -41,7 +41,6 @@ var defaultConfig = map[string]string{
 var defaultKeys = map[string]string{
 	"g":  "",
 	"gx": "quit",
-	":":  "openCommandPallet",
 }
 
 var defaultCommands = map[string]Event{

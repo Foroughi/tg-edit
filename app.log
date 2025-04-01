@@ -1,17 +1,202 @@
-2025/04/01 16:37:51 registering quit
-2025/04/01 16:37:51 Loading plugin manager: plugin-manager...
-2025/04/01 16:37:51 Custom plugin plugin-manager loaded successfully.
-2025/04/01 16:37:51 Starting TG-Edit...
-2025/04/01 16:37:51 registering AddMessage
-2025/04/01 16:37:51 registering GetMessages
-2025/04/01 16:37:51 MessageCenter Plugin Initialized
-2025/04/01 16:37:51 Plugin 'MessageCenter' added successfully.
-2025/04/01 16:37:51 Loaded plugin: MessageCenter
-2025/04/01 16:37:51 registering Start_UI
-2025/04/01 16:37:51 Plugin 'UIManager' added successfully.
-2025/04/01 16:37:51 Loaded plugin: UIManager
-2025/04/01 16:37:51 Calling function: Start_UI
-2025/04/01 16:37:53 Calling function: quit
-2025/04/01 16:37:53 Function quit executed successfully
-2025/04/01 16:37:53 Function Start_UI executed successfully
-2025/04/01 16:37:53 Stopping TG-Edit...
+2025/04/01 22:26:49 registering quit
+2025/04/01 22:26:49 ON_KEY 0
+2025/04/01 22:26:49 Loading plugin manager: plugin-manager...
+2025/04/01 22:26:49 ON_APP_START 0
+2025/04/01 22:26:49 Custom plugin plugin-manager loaded successfully.
+2025/04/01 22:26:49 Starting TG-Edit...
+2025/04/01 22:26:49 ACTIVE_WINDOW_CHANGED 0
+2025/04/01 22:26:49 ON_KEY 1
+2025/04/01 22:26:49 registering COMMAND
+2025/04/01 22:26:49 Plugin 'CommandPallete' added successfully.
+2025/04/01 22:26:49 Loaded plugin: CommandPallete
+2025/04/01 22:26:49 registering AddMessage
+2025/04/01 22:26:49 registering GetMessages
+2025/04/01 22:26:49 MessageCenter Plugin Initialized
+2025/04/01 22:26:49 Plugin 'MessageCenter' added successfully.
+2025/04/01 22:26:49 Loaded plugin: MessageCenter
+2025/04/01 22:26:49 ON_UI_START 0
+2025/04/01 22:26:49 Plugin 'StatusLine' added successfully.
+2025/04/01 22:26:49 Loaded plugin: StatusLine
+2025/04/01 22:26:49 ON_Quit 0
+2025/04/01 22:26:49 registering Start_UI
+2025/04/01 22:26:49 registering SET_WINDOW_CONTENT
+2025/04/01 22:26:49 registering GET_WINDOW_CONTENT
+2025/04/01 22:26:49 registering OPEN_WINDOW
+2025/04/01 22:26:49 registering CLOSE_WINDOW
+2025/04/01 22:26:49 registering ACTIVE_WINDOW
+2025/04/01 22:26:49 registering GET_SCREEN_SIZE
+2025/04/01 22:26:49 Plugin 'UIManager' added successfully.
+2025/04/01 22:26:49 Loaded plugin: UIManager
+2025/04/01 22:26:49 Calling function: Start_UI
+2025/04/01 22:26:49 Calling function: GET_SCREEN_SIZE
+2025/04/01 22:26:49 Function GET_SCREEN_SIZE executed successfully
+2025/04/01 22:26:49 Calling function: OPEN_WINDOW
+2025/04/01 22:26:49 Calling function: AddMessage
+2025/04/01 22:26:49 [INFO] Opening Status line
+2025/04/01 22:26:49 Function AddMessage executed successfully
+2025/04/01 22:26:49 Function OPEN_WINDOW executed successfully
+2025/04/01 22:26:49 ON_KEY 2
+2025/04/01 22:26:54 ====================status line key
+2025/04/01 22:26:54 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:54 Calling function: AddMessage
+2025/04/01 22:26:54 [INFO] Window content updated
+2025/04/01 22:26:54 Function AddMessage executed successfully
+2025/04/01 22:26:54 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:54 Current key sequence: [:]
+2025/04/01 22:26:54 Calling function: COMMAND
+2025/04/01 22:26:54 Calling function: GET_SCREEN_SIZE
+2025/04/01 22:26:54 Function GET_SCREEN_SIZE executed successfully
+2025/04/01 22:26:54 Calling function: OPEN_WINDOW
+2025/04/01 22:26:54 Calling function: AddMessage
+2025/04/01 22:26:54 [INFO] Opening Command Pallete
+2025/04/01 22:26:54 Function AddMessage executed successfully
+2025/04/01 22:26:54 Function OPEN_WINDOW executed successfully
+2025/04/01 22:26:54 Function COMMAND executed successfully
+2025/04/01 22:26:54 Current key sequence: [w]
+2025/04/01 22:26:54 ====================command pallete key
+2025/04/01 22:26:54 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:54 Calling function: AddMessage
+2025/04/01 22:26:54 [INFO] Window content updated
+2025/04/01 22:26:54 Function AddMessage executed successfully
+2025/04/01 22:26:54 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:54 ====================status line key
+2025/04/01 22:26:54 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:54 Calling function: AddMessage
+2025/04/01 22:26:54 [ERROR] Window not found for SET_WINDOW_CONTENT
+2025/04/01 22:26:54 Function AddMessage executed successfully
+2025/04/01 22:26:54 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 Current key sequence: [q]
+2025/04/01 22:26:55 ====================command pallete key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [INFO] Window content updated
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 ====================status line key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [ERROR] Window not found for SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 Current key sequence: [d]
+2025/04/01 22:26:55 ====================command pallete key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [INFO] Window content updated
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 ====================status line key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [ERROR] Window not found for SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 Current key sequence: [q]
+2025/04/01 22:26:55 ====================command pallete key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [INFO] Window content updated
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 ====================status line key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [ERROR] Window not found for SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 Current key sequence: [w]
+2025/04/01 22:26:55 ====================command pallete key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [INFO] Window content updated
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 ====================status line key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [ERROR] Window not found for SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 Current key sequence: [d]
+2025/04/01 22:26:55 ====================command pallete key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [INFO] Window content updated
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 ====================status line key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [ERROR] Window not found for SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 ====================status line key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [ERROR] Window not found for SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 Current key sequence: [q]
+2025/04/01 22:26:55 ====================command pallete key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [INFO] Window content updated
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 Current key sequence: [w]
+2025/04/01 22:26:55 ====================command pallete key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [INFO] Window content updated
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 ====================status line key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [ERROR] Window not found for SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 ====================status line key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [ERROR] Window not found for SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:26:55 Current key sequence: [d]
+2025/04/01 22:26:55 ====================command pallete key
+2025/04/01 22:26:55 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:26:55 Calling function: AddMessage
+2025/04/01 22:26:55 [INFO] Window content updated
+2025/04/01 22:26:55 Function AddMessage executed successfully
+2025/04/01 22:26:55 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:27:04 Current key sequence: [Esc]
+2025/04/01 22:27:04 ====================command pallete key
+2025/04/01 22:27:04 Calling function: CLOSE_WINDOW
+2025/04/01 22:27:04 Calling function: AddMessage
+2025/04/01 22:27:04 [INFO] Window closed
+2025/04/01 22:27:04 Function AddMessage executed successfully
+2025/04/01 22:27:04 Function CLOSE_WINDOW executed successfully
+2025/04/01 22:27:04 ====================status line key
+2025/04/01 22:27:04 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:27:04 Calling function: AddMessage
+2025/04/01 22:27:04 [ERROR] Window not found for SET_WINDOW_CONTENT
+2025/04/01 22:27:04 Function AddMessage executed successfully
+2025/04/01 22:27:04 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:27:05 Current key sequence: [g]
+2025/04/01 22:27:05 ====================status line key
+2025/04/01 22:27:05 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:27:05 Calling function: AddMessage
+2025/04/01 22:27:05 [ERROR] Window not found for SET_WINDOW_CONTENT
+2025/04/01 22:27:05 Function AddMessage executed successfully
+2025/04/01 22:27:05 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:27:05 Current key sequence: [g x]
+2025/04/01 22:27:05 Calling function: quit
+2025/04/01 22:27:05 Function quit executed successfully
+2025/04/01 22:27:05 ====================status line key
+2025/04/01 22:27:05 Calling function: SET_WINDOW_CONTENT
+2025/04/01 22:27:05 Calling function: AddMessage
+2025/04/01 22:27:05 [ERROR] Window not found for SET_WINDOW_CONTENT
+2025/04/01 22:27:05 Function AddMessage executed successfully
+2025/04/01 22:27:05 Function SET_WINDOW_CONTENT executed successfully
+2025/04/01 22:27:05 Function Start_UI executed successfully
+2025/04/01 22:27:05 Stopping TG-Edit...

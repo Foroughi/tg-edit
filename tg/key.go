@@ -1,9 +1,8 @@
 package TG
 
 import (
+	"log"
 	"strings"
-
-	"github.com/gdamore/tcell/v2"
 )
 
 type KeyManager struct {
@@ -30,18 +29,16 @@ func (km *KeyManager) Load(tg *TG) {
 // Handle a key event: check if it matches a key sequence
 func (km *KeyManager) handleKeyEvent(data any) {
 
-	keyEvent, ok := data.(*tcell.EventKey)
+	key, ok := data.(string)
 
 	if !ok {
 
 		return
 	}
 
-	key := km.getKeyString(keyEvent)
-
 	// Add the key to the current sequence
 	km.currentSequence = append(km.currentSequence, key)
-
+	log.Printf("Current key sequence: %v", km.currentSequence)
 	// Check if the current sequence matches any of the default key combinations
 	if command, exists := km.matchSequence(); exists {
 		// Sequence matched, call the associated command
@@ -50,24 +47,27 @@ func (km *KeyManager) handleKeyEvent(data any) {
 
 		// Clear the sequence after execution
 		km.currentSequence = []string{}
+	} else {
+		// Clear the sequence after execution
+		matched := false
+		for key := range defaultKeys {
+			if strings.HasPrefix(key, strings.Join(km.currentSequence, "")) {
+				matched = true
+				break
+			}
+		}
+		if !matched {
+			km.currentSequence = []string{}
+		}
 	}
-}
 
-func (km *KeyManager) getKeyString(ev *tcell.EventKey) string {
-	if ev.Modifiers()&tcell.ModCtrl != 0 {
-		return "Ctrl+" + ev.Name()
-	}
-	if ev.Modifiers()&tcell.ModAlt != 0 {
-		return "Alt+" + ev.Name()
-	}
-	return ev.Name() // Default key name
 }
 
 func (km *KeyManager) matchSequence() (string, bool) {
 	// Convert currentSequence (e.g., ["Rune[g]", "Rune[x]"]) to a simple string (e.g., "gx")
 	var cleanedSeq []string
 	for _, key := range km.currentSequence {
-		cleanedSeq = append(cleanedSeq, strings.TrimPrefix(strings.TrimSuffix(key, "]"), "Rune["))
+		cleanedSeq = append(cleanedSeq, key)
 	}
 	seqStr := strings.Join(cleanedSeq, "")
 
@@ -82,4 +82,10 @@ func (km *KeyManager) matchSequence() (string, bool) {
 	}
 
 	return "", false
+}
+
+// RegisterKeyCombination allows plugins to register a key combination with a command
+func (km *KeyManager) RegisterKey(keyCombination string, command string) {
+
+	defaultKeys[keyCombination] = command
 }
