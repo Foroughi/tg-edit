@@ -24,9 +24,9 @@ func (p *StatusLinePlugin) Init(tg *TG.TG) {
 		screenWidth := screenSize["width"]
 		screenHeight := screenSize["height"]
 
-		// Dynamically set the style for the status line
+		// Dynamically set the style for the status line window
 		tg.Api.Call("SET_STYLES", map[string]any{
-			"key": "status_line",
+			"key": "status_line.win",
 			"style": map[string]any{
 				"fg":        "white",
 				"bg":        "black",
@@ -39,14 +39,36 @@ func (p *StatusLinePlugin) Init(tg *TG.TG) {
 				"y":         screenHeight - 3, // Position at the bottom of the screen
 				"w":         screenWidth,      // Full screen width
 				"h":         3,                // Height of the status line
+				"border": map[string]any{
+					"fg":   "white",
+					"bg":   "black",
+					"bold": true,
+				},
+				"title": map[string]any{
+					"fg":   "yellow",
+					"bg":   "black",
+					"bold": true,
+				},
+			},
+		})
+
+		// Define a new text style for the status line content
+		tg.Api.Call("SET_STYLES", map[string]any{
+			"key": "status_line.text",
+			"style": map[string]any{
+				"fg":        "yellow",
+				"bg":        "black",
+				"bold":      true,
+				"italic":    false,
+				"underline": false,
 			},
 		})
 
 		// Prepare window data with the new style
 		windowData := map[string]any{
 			"title":   "Status line",
-			"content": p.leftContent + "|" + p.centerContent + "|" + p.rightContent,
-			"style":   "status_line", // Use the dynamically set style
+			"content": p.getStyledContent(tg), // Use styled content
+			"style":   "status_line.win",      // Use the dynamically set style
 		}
 
 		// Save the returned pointer to the status line window
@@ -65,10 +87,31 @@ func (p *StatusLinePlugin) Init(tg *TG.TG) {
 	})
 }
 
+func (p *StatusLinePlugin) getStyledContent(tg *TG.TG) string {
+	// Call STYLE_TEXT command for each part of the content
+	leftStyled := tg.Api.Call("STYLE_TEXT", map[string]any{
+		"text":  p.leftContent,
+		"style": "status_line.text", // Use the defined text style
+	}).(string)
+
+	centerStyled := tg.Api.Call("STYLE_TEXT", map[string]any{
+		"text":  p.centerContent,
+		"style": "status_line.text", // Use the defined text style
+	}).(string)
+
+	rightStyled := tg.Api.Call("STYLE_TEXT", map[string]any{
+		"text":  p.rightContent,
+		"style": "status_line.text", // Use the defined text style
+	}).(string)
+
+	// Combine the styled content
+	return leftStyled + " | " + centerStyled + " | " + rightStyled
+}
+
 func (p *StatusLinePlugin) update() {
 	p.tg.Api.Call("SET_WINDOW_CONTENT", map[string]any{
 		"window":  p.statusLineWindow,
-		"content": p.leftContent + "|" + p.centerContent + "|" + p.rightContent,
+		"content": p.getStyledContent(p.tg), // Use styled content
 	})
 }
 

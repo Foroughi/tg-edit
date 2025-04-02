@@ -271,16 +271,26 @@ func (ui *UIManagerPlugin) Init(tg *TG.TG) {
 			return nil
 		}
 
+		// Extract the text to style
 		text, ok := params["text"].(string)
 		if !ok {
 			ui.tg.Api.Call("AddMessage", "ERROR", "Invalid text format for STYLE_TEXT")
 			return nil
 		}
 
-		style, ok := params["style"].(map[string]any)
+		// Extract the style key
+		styleKey, ok := params["style"].(string)
 		if !ok {
-			ui.tg.Api.Call("AddMessage", "ERROR", "Invalid style format for STYLE_TEXT")
+			ui.tg.Api.Call("AddMessage", "ERROR", "Invalid style key format for STYLE_TEXT")
 			return nil
+		}
+
+		// Retrieve the style data using GET_STYLES
+		styleData := ui.tg.Api.Call("GET_STYLES", styleKey)
+		style, ok := styleData.(map[string]any)
+		if !ok {
+			ui.tg.Api.Call("AddMessage", "ERROR", "Style not found or invalid for key: "+styleKey)
+			return text // Return the original text if the style is invalid
 		}
 
 		// Use ApplyStyleToText to style the text
@@ -375,19 +385,41 @@ func (ui *UIManagerPlugin) drawWindow(win *window, styleKey string) {
 	w := win.w - margin[1] - margin[3] // Width reduced by left and right margins
 	h := win.h - margin[0] - margin[2] // Height reduced by top and bottom margins
 
-	// Draw window border
-	for i := 0; i < w; i++ {
-		ui.screen.SetContent(x+i, y, tcell.RuneHLine, nil, tcellStyle)
-		ui.screen.SetContent(x+i, y+h-1, tcell.RuneHLine, nil, tcellStyle)
+	// Check if the border style exists
+	borderStyle, hasBorder := style["border"].(map[string]any)
+	if hasBorder {
+		borderFg := tcell.ColorWhite
+		borderBg := tcell.ColorBlack
+		borderBold := false
+		if fg, ok := borderStyle["fg"].(string); ok {
+			borderFg = tcell.GetColor(fg)
+		}
+		if bg, ok := borderStyle["bg"].(string); ok {
+			borderBg = tcell.GetColor(bg)
+		}
+		if b, ok := borderStyle["bold"].(bool); ok {
+			borderBold = b
+		}
+
+		borderTcellStyle := tcell.StyleDefault.Foreground(borderFg).Background(borderBg)
+		if borderBold {
+			borderTcellStyle = borderTcellStyle.Bold(true)
+		}
+
+		// Draw window border
+		for i := 0; i < w; i++ {
+			ui.screen.SetContent(x+i, y, tcell.RuneHLine, nil, borderTcellStyle)
+			ui.screen.SetContent(x+i, y+h-1, tcell.RuneHLine, nil, borderTcellStyle)
+		}
+		for i := 0; i < h; i++ {
+			ui.screen.SetContent(x, y+i, tcell.RuneVLine, nil, borderTcellStyle)
+			ui.screen.SetContent(x+w-1, y+i, tcell.RuneVLine, nil, borderTcellStyle)
+		}
+		ui.screen.SetContent(x, y, tcell.RuneULCorner, nil, borderTcellStyle)
+		ui.screen.SetContent(x+w-1, y, tcell.RuneURCorner, nil, borderTcellStyle)
+		ui.screen.SetContent(x, y+h-1, tcell.RuneLLCorner, nil, borderTcellStyle)
+		ui.screen.SetContent(x+w-1, y+h-1, tcell.RuneLRCorner, nil, borderTcellStyle)
 	}
-	for i := 0; i < h; i++ {
-		ui.screen.SetContent(x, y+i, tcell.RuneVLine, nil, tcellStyle)
-		ui.screen.SetContent(x+w-1, y+i, tcell.RuneVLine, nil, tcellStyle)
-	}
-	ui.screen.SetContent(x, y, tcell.RuneULCorner, nil, tcellStyle)
-	ui.screen.SetContent(x+w-1, y, tcell.RuneURCorner, nil, tcellStyle)
-	ui.screen.SetContent(x, y+h-1, tcell.RuneLLCorner, nil, tcellStyle)
-	ui.screen.SetContent(x+w-1, y+h-1, tcell.RuneLRCorner, nil, tcellStyle)
 
 	// Adjust content area based on padding
 	contentX := x + 1 + padding[3]              // Left padding
@@ -395,11 +427,40 @@ func (ui *UIManagerPlugin) drawWindow(win *window, styleKey string) {
 	contentW := w - 2 - padding[1] - padding[3] // Width reduced by left and right padding
 	contentH := h - 2 - padding[0] - padding[2] // Height reduced by top and bottom padding
 
-	// Draw window title
-	titleRunes := []rune(win.title)
-	for i, r := range titleRunes {
-		if contentX+i < x+w-1 {
-			ui.screen.SetContent(contentX+i, y, r, nil, tcellStyle)
+	// Fill the entire content area with the background style
+	for cy := contentY; cy < contentY+contentH; cy++ {
+		for cx := contentX; cx < contentX+contentW; cx++ {
+			ui.screen.SetContent(cx, cy, ' ', nil, tcellStyle)
+		}
+	}
+
+	// Check if the title style exists
+	titleStyle, hasTitle := style["title"].(map[string]any)
+	if hasTitle {
+		titleFg := tcell.ColorYellow
+		titleBg := tcell.ColorBlack
+		titleBold := false
+		if fg, ok := titleStyle["fg"].(string); ok {
+			titleFg = tcell.GetColor(fg)
+		}
+		if bg, ok := titleStyle["bg"].(string); ok {
+			titleBg = tcell.GetColor(bg)
+		}
+		if b, ok := titleStyle["bold"].(bool); ok {
+			titleBold = b
+		}
+
+		titleTcellStyle := tcell.StyleDefault.Foreground(titleFg).Background(titleBg)
+		if titleBold {
+			titleTcellStyle = titleTcellStyle.Bold(true)
+		}
+
+		// Draw window title
+		titleRunes := []rune(win.title)
+		for i, r := range titleRunes {
+			if contentX+i < x+w-1 {
+				ui.screen.SetContent(contentX+i, y, r, nil, titleTcellStyle)
+			}
 		}
 	}
 
