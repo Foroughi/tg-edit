@@ -24,6 +24,8 @@ func (p *MessageCenterPlugin) Init(tg *TG.TG) {
 	p.tg.Api.RegisterCommand("AddMessage", p.AddMessage)
 	p.tg.Api.RegisterCommand("GetMessages", p.GetMessages)
 
+	p.tg.Event.Register("MESSAGE_ADDED")
+
 	log.Println("MessageCenter Plugin Initialized")
 }
 
@@ -38,7 +40,7 @@ func (p *MessageCenterPlugin) AddMessage(tg *TG.TG, args ...any) any {
 	msg := Message{Level: level, Content: content}
 	p.messages = append(p.messages, msg)
 
-	p.tg.Event.Dispatch("message_added", msg)
+	p.tg.Event.Dispatch("MESSAGE_ADDED", msg)
 	log.Printf("[%s] %s", level, content)
 
 	return msg

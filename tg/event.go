@@ -24,7 +24,7 @@ func (em *EventManager) Load(tg *TG) {
 	em.tg = tg
 }
 
-func (em *EventManager) Register(event string, handler Event) {
+func (em *EventManager) Register(event string) {
 	em.lock.Lock()
 	defer em.lock.Unlock()
 
@@ -34,7 +34,6 @@ func (em *EventManager) Register(event string, handler Event) {
 
 	em.counter++
 
-	em.subscriptions[event][em.counter] = handler
 }
 
 func (em *EventManager) Dispatch(event string, args any) {
@@ -43,6 +42,7 @@ func (em *EventManager) Dispatch(event string, args any) {
 	subscriptions, exists := em.subscriptions[event]
 	em.lock.RUnlock()
 	if !exists {
+		log.Printf("[ERROR] Invalid event %s is being asked to dispatch", event)
 		return
 	}
 

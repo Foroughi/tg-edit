@@ -1,13 +1,13 @@
 package TG
 
 import (
-	"log"
 	"strings"
 )
 
 type KeyManager struct {
 	currentSequence []string // Tracks the current sequence of keys pressed
 	tg              *TG
+	recording       bool
 }
 
 // Initialize the key manager and set default key combinations
@@ -20,9 +20,23 @@ func NewKeyManager() *KeyManager {
 
 func (km *KeyManager) Load(tg *TG) {
 	km.tg = tg
-	km.tg.Event.Subscribe("ON_KEY", func(tg *TG, data any) {
+	km.recording = true
 
-		km.handleKeyEvent(data)
+	km.tg.Event.Register("ON_KEY_COMBINATION_FOUND")
+	km.tg.Event.Register("ON_KEY_COMBINATION_PROCCESSING")
+
+	tg.Api.RegisterCommand("RECORD_KEYS", func(tg *TG, data any) {
+		km.recording = true
+	})
+
+	tg.Api.RegisterCommand("DONT_RECORD_KEYS", func(tg *TG, data any) {
+		km.recording = false
+	})
+
+	km.tg.Event.Subscribe("ON_KEY", func(tg *TG, data any) {
+		if km.recording {
+			km.handleKeyEvent(data)
+		}
 	})
 }
 
@@ -32,31 +46,31 @@ func (km *KeyManager) handleKeyEvent(data any) {
 	key, ok := data.(string)
 
 	if !ok {
-
 		return
 	}
 
-	// Add the key to the current sequence
 	km.currentSequence = append(km.currentSequence, key)
-	log.Printf("Current key sequence: %v", km.currentSequence)
-	// Check if the current sequence matches any of the default key combinations
 	if command, exists := km.matchSequence(); exists {
-		// Sequence matched, call the associated command
+
+		km.tg.Event.Dispatch("ON_KEY_COMBINATION_FOUND", strings.Join(km.currentSequence, " "))
 
 		km.tg.Api.Call(command)
 
-		// Clear the sequence after execution
 		km.currentSequence = []string{}
 	} else {
-		// Clear the sequence after execution
+
 		matched := false
 		for key := range defaultKeys {
 			if strings.HasPrefix(key, strings.Join(km.currentSequence, "")) {
 				matched = true
+				km.tg.Event.Dispatch("ON_KEY_COMBINATION_PROCCESSING", strings.Join(km.currentSequence, " "))
 				break
 			}
 		}
 		if !matched {
+
+			km.tg.Event.Dispatch("ON_KEY_COMBINATION_FOUND", nil)
+
 			km.currentSequence = []string{}
 		}
 	}
@@ -64,11 +78,11 @@ func (km *KeyManager) handleKeyEvent(data any) {
 }
 
 func (km *KeyManager) matchSequence() (string, bool) {
-	// Convert currentSequence (e.g., ["Rune[g]", "Rune[x]"]) to a simple string (e.g., "gx")
+
 	var cleanedSeq []string
-	for _, key := range km.currentSequence {
-		cleanedSeq = append(cleanedSeq, key)
-	}
+
+	cleanedSeq = append(cleanedSeq, km.currentSequence...)
+
 	seqStr := strings.Join(cleanedSeq, "")
 
 	// Check for a direct match

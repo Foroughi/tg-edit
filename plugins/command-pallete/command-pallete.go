@@ -1,8 +1,6 @@
 package main
 
 import (
-	"log"
-
 	TG "github.com/foroughi/tg-edit/tg"
 )
 
@@ -34,14 +32,13 @@ func (p *CommandPalletePlugin) Init(tg *TG.TG) {
 
 		if p.isCommandPalleteActive {
 
-			log.Print("====================command pallete key")
-
 			key := data.(string)
 			// Handle key input when the command palette is active
 			if key == "Esc" {
 				// Close the command palette window
 				tg.Api.Call("CLOSE_WINDOW", p.commandWindow)
 				p.isCommandPalleteActive = false
+				tg.Api.Call("RECORD_KEYS")
 			} else {
 				// Append the key to the command palette content
 
@@ -53,7 +50,9 @@ func (p *CommandPalletePlugin) Init(tg *TG.TG) {
 			}
 		}
 	})
+
 	tg.Api.RegisterCommand("COMMAND", func(tg *TG.TG, data any) {
+
 		p.content = ""
 		screenSize := tg.Api.Call("GET_SCREEN_SIZE", nil).(map[string]int)
 		screenWidth := screenSize["width"]
@@ -70,6 +69,7 @@ func (p *CommandPalletePlugin) Init(tg *TG.TG) {
 		// Save the returned pointer to the command palette window
 		p.commandWindow = tg.Api.Call("OPEN_WINDOW", windowData)
 		p.isCommandPalleteActive = true
+		tg.Api.Call("DONT_RECORD_KEYS")
 	})
 
 	tg.Key.RegisterKey(":", "COMMAND")
